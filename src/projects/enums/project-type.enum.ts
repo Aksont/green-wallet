@@ -1,0 +1,5 @@
+export enum ProjectType {
+  DONATION = 'DONATION',
+  VOLUNTEER = 'VOLUNTEER',
+  CHALLENGE = 'CHALLENGE',
+}
