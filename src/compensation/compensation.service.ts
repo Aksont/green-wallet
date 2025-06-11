@@ -35,9 +35,14 @@ export class CompensationService {
   ): Promise<CompensationSuggestions> {
     const trip = await this.findTrip(tripId);
     const countries = this.collectCountries(trip);
-    const projects = await this.projectsService.findProjects(
+    let projects = await this.projectsService.findProjects(
       Array.from(countries),
     );
+
+    if (projects.length === 0) {
+      projects = await this.projectsService.findAll();
+    }
+
     const donationProjects = projects.filter(
       (p): p is DonationProject => p.type === ProjectType.DONATION,
     );
