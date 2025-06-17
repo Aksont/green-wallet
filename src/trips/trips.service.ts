@@ -118,6 +118,17 @@ export class TripsService {
     return await this.tripsRepo.findById(id);
   }
 
+  async findByIds(ids: string[]): Promise<Trip[]> {
+    const trips: Trip[] = [];
+
+    for (const id of ids) {
+      const trip = await this.tripsRepo.findById(id);
+      if (trip) trips.push(trip);
+    }
+
+    return trips;
+  }
+
   async create(dto: CreateTripDto): Promise<Trip> {
     validateEndDateAfterOrEqualStartDate(dto.startDate, dto.endDate);
     const trip = this.createTrip(dto);
