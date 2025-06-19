@@ -27,4 +27,14 @@ export class ProofOfCompensationsRepository {
     const _new = new this.model(data);
     return _new.save();
   }
+
+  async claim(tripId: string): Promise<ProofOfCompensation | null> {
+    return this.model
+      .findOneAndUpdate(
+        { tripId },
+        { $set: { status: 'CLAIMED' } },
+        { new: true }, // returns the updated document
+      )
+      .exec();
+  }
 }

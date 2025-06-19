@@ -3,4 +3,5 @@ export enum ProofOfCompensationStatus {
   APPROVED = 'APPROVED',
   DECLINED = 'DECLINED',
   ACTION_NEEDED = 'ACTION_NEEDED',
+  CLAIMED = 'CLAIMED',
 }

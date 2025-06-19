@@ -16,6 +16,10 @@ import { UsersService } from 'src/users/users.service';
 import { UserStats } from './interfaces/user-stats.interface';
 import { TripsService } from 'src/trips/trips.service';
 import { ProjectsService } from 'src/projects/projects.service';
+import {
+  claimProofToUser,
+  getTokenId,
+} from './blockchain/compensation.blockchain';
 
 @Controller('compensation')
 export class CompensationController {
@@ -116,5 +120,24 @@ export class CompensationController {
     } // TODO implement real verification
 
     return this.compensationService.getUserStats(userId);
+  }
+
+  @Post('claim')
+  async claimProof(@Body() body: { tripId: string; userAddress: string }) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-assignment
+    const hx = await claimProofToUser(body.tripId, body.userAddress);
+    console.log(hx);
+    const updated = await this.compensationService.claim(body.tripId);
+    console.log(updated);
+  }
+
+  @Get('token/:tripId')
+  async getTokenId(@Param('tripId') tripId: string): Promise<number> {
+    const trip = await this.tripsService.findById(tripId);
+    if (!trip) {
+      throw new NotFoundException(`Trip with ID ${tripId} not found`);
+    }
+
+    return getTokenId(tripId);
   }
 }

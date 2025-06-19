@@ -16,6 +16,7 @@ import { ProofOfCompensation } from './interfaces/proof-of-compensation.interfac
 import { ProofOfCompensationStatus } from './enums/proof-of-compensation-status.interface';
 import { ProofOfCompensationsRepository } from './repositories/proof-of-compensation.repository';
 import { CompensationInfosRepository } from './repositories/compensation-info.repository';
+import { issueProofToChain } from './blockchain/compensation.blockchain';
 
 @Injectable()
 export class CompensationService {
@@ -171,6 +172,16 @@ export class CompensationService {
       comment: 'I felt happy to be able to compensate for my necessary trip!',
       status: ProofOfCompensationStatus.APPROVED,
     };
+
+    const trip = await this.tripsService.findById(tripId);
+    await issueProofToChain(
+      tripId,
+      trip?.totalCo2emissionInKg || 0,
+      trip?.totalDistanceInKm || 0,
+      proof.trees,
+      proof.volunteerHours,
+    );
+
     return await this.proofRepository.create(proof);
   }
 
@@ -213,5 +224,9 @@ export class CompensationService {
       totalTrips: trips.length,
       compensatedTrips: proofs.length,
     };
+  }
+
+  async claim(tripId: string): Promise<ProofOfCompensation | null> {
+    return await this.proofRepository.claim(tripId);
   }
 }
